@@ -1,40 +1,56 @@
 class UsersController < ApplicationController
+  before_action :load_user, except: [:index, :new, :create]
+  before_action :authorize_user, except: [:index, :new, :create, :show]
+
   def index
-    @users = [
-    User.new(
-      id: 1,
-      name: 'Vitaly',
-      username: 'ambroza',
-      avatar_url: 'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/00/006f94b3f005f1e690d3c944ccfa5a8eca0ed8c1_full.jpg'
-    ),
-    User.new(
-      id: 2,
-      name: 'Anna',
-      username: 'Anyuta',
-      avatar_url: 'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/dc/dc66fa445dd8747e54552c2c924bf809b7fae217_full.jpg'
-    )]
+    @users = User.all
   end
 
   def new
+    redirect_to root_url, alert: 'Вы уже залогинены' if current_user.present?
+    @user = User.new
+  end
+
+  def create
+    redirect_to root_url, alert: 'Вы уже залогинены' if current_user.present?
+    @user = User.new(user_params)
+
+    if @user.save
+      redirect_to root_url, notice: 'Пользователь успешно зарегистрирован'
+    else
+      render 'new'
+    end
   end
 
   def edit
   end
 
-  def show
-    @user = User.new(
-      name: 'Vitaly',
-      username: 'ambroza',
-      avatar_url: 'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/00/006f94b3f005f1e690d3c944ccfa5a8eca0ed8c1_full.jpg'
-    )
+  def update
 
-    @questions = [
-      Question.new(text: 'Как дела?', created_at: Date.parse('25.02.2024')),
-      Question.new(text: 'В чем смысл жизни?', created_at: Date.parse('24.02.2024'))
-    ]
-
-    @new_question = Question.new
+    if @user.update(user_params)
+      redirect_to user_path(@user), notice: 'Данные обновлены'
+    else
+      render 'edit'
+    end
   end
 
+  def show
+    @questions = @user.questions.order(created_at: :desc)
+
+    @new_question = @user.questions.build
+  end
+
+  private
+  def authorize_user
+    reject_user unless @user == current_user
+  end
+  def load_user
+    @user = User.find params[:id]
+  end
+
+  def user_params
+    params.require(:user).permit(:email, :password, :password_confirmation,
+                                 :name, :username, :avatar_url)
+  end
 
 end
