@@ -1,21 +1,20 @@
 databases:
-  - name: mysite
-    databaseName: askme_db
-    user: mysite
+  - name: askme
+    databaseName: askme
+    user: vit
     plan: free
 
 services:
   - type: web
-    name: mysite
+    name: askme
     runtime: ruby
     plan: free
     buildCommand: "./bin/render-build.sh"
-    # preDeployCommand: "bundle exec rails db:migrate" # preDeployCommand only available on paid instance types
-    startCommand: "bundle exec rails server"
+    startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: mysite
+          name: askme
           property: connectionString
       - key: RAILS_MASTER_KEY
         sync: false
