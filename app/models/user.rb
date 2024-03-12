@@ -3,10 +3,11 @@ require 'openssl'
 class User < ApplicationRecord
   attr_accessor :password
 
+
   ITERATIONS = 20_000
   DIGEST = OpenSSL::Digest::SHA256.new
 
-  has_many :questions
+  has_many :questions, dependent: :destroy
 
   before_validation { username.downcase! }
 

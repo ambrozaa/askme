@@ -23,4 +23,11 @@ module ApplicationHelper
     content_tag 'span', '', class: "fa fa-#{icon_class}"
   end
 
+  def bg_color(color)
+
+    return '#FAEBD7' if color == 1
+    return '#5F9EA0' if color == 2
+    return '#BDB76B' if color == 3
+    return '#005a55' if color == 4
+  end
 end

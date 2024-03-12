@@ -2,6 +2,11 @@ class UsersController < ApplicationController
   before_action :load_user, except: [:index, :new, :create]
   before_action :authorize_user, except: [:index, :new, :create, :show]
 
+  def destroy
+    @user.destroy
+    redirect_to root_url, notice: 'Пользователь успешно удален!'
+  end
+
   def index
     @users = User.all
   end
@@ -16,6 +21,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
+      session[:user_id] = @user.id
       redirect_to root_url, notice: 'Пользователь успешно зарегистрирован'
     else
       render 'new'
@@ -35,6 +41,8 @@ class UsersController < ApplicationController
   end
 
   def show
+    @bg_color = '#005a55'
+
     @questions = @user.questions.order(created_at: :desc)
 
     @new_question = @user.questions.build
@@ -54,7 +62,7 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:email, :password, :password_confirmation,
-                                 :name, :username, :avatar_url)
+    :name, :username, :avatar_url)
   end
 
 end
