@@ -20,6 +20,7 @@ class QuestionsController < ApplicationController
   # /questions/edit
   def create
     @question = Question.new(question_params)
+    @question.author = current_user
 
     if @question.save
       redirect_to user_path(@question.user), notice: 'Вопрос задан'
@@ -56,6 +57,12 @@ class QuestionsController < ApplicationController
 
     # Отправляем пользователя на страницу адресата вопроса с сообщением
     redirect_to user_path(user), notice: 'Вопрос удален :('
+  end
+
+  def author_idd(question)
+    @user = User.find(question)
+    return @user
+
   end
 
   private

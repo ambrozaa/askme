@@ -52,6 +52,7 @@ class UsersController < ApplicationController
     @unanswered_count = @questions_count - @answers_count
   end
 
+
   private
   def authorize_user
     reject_user unless @user == current_user
