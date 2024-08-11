@@ -1,4 +1,3 @@
-
 class QuestionsController < ApplicationController
   # Инициализируем объект вопрос для экшенов кроме :edit, :update, :destroy
   before_action :load_question, only: [:edit, :update, :destroy]
@@ -20,6 +19,7 @@ class QuestionsController < ApplicationController
   # /questions/edit
   def create
     @question = Question.new(question_params)
+
     @question.author = current_user
 
     if @question.save
@@ -59,7 +59,7 @@ class QuestionsController < ApplicationController
     redirect_to user_path(user), notice: 'Вопрос удален :('
   end
 
-  def author_idd(question)
+  def author_id(question)
     @user = User.find(question)
     return @user
 
@@ -92,4 +92,5 @@ class QuestionsController < ApplicationController
       params.require(:question).permit(:user_id, :text)
     end
   end
+
 end

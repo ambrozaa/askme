@@ -1,8 +1,20 @@
 class Question < ActiveRecord::Base
 
   belongs_to :user
-  validates :user, :text, presence: true
-  belongs_to :author, class_name: 'User', optional: true
+  belongs_to :author, class_name: 'User'
+  has_many :hashtags_questions, inverse_of: :question, dependent: :destroy
+  has_many :hashtags, through: :hashtags_questions
 
+  validates :text, presence: true, length: { maximum: 255 }
+
+  before_save :add_hashtags
+
+  private
+
+  def add_hashtags
+    self.hashtags.clear
+    hashtags_list = Hashtag.from_string("#{text} #{answer}")
+    hashtags_list.each { |tag| self.hashtags << tag }
+  end
 
 end
